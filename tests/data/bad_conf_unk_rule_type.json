@@ -1,0 +1,10 @@
+{
+	"socket": "/path/to/some/socket",
+	"rules": {
+		"test": {
+			"message": "Blah",
+			"type": "invalid",
+			"conds": []
+		}
+	}
+}

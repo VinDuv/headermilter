@@ -1,0 +1,34 @@
+{
+	"socket": "/path/to/some/socket",
+	"rules": {
+		"test": {
+			"message": "Blah",
+			"type": "or",
+			"conds": [
+				{
+					"type": "match",
+					"item": "subject",
+					"value": "Test"
+				},
+				{
+					"type": "and",
+					"conds": [
+						{
+							"type": "match",
+							"item": "from",
+							"value": "test@example.org"
+						},
+						{
+							"type": "not",
+							"rule": {
+								"type": "match",
+								"item": "to",
+								"value": "test@example.org"
+							}
+						}
+					]
+				}
+			]
+		}
+	}
+}

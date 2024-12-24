@@ -1,0 +1,11 @@
+{
+	"empty_string": "",
+	"some_dict": {
+		"a": 42
+	},
+	"some_array": [
+		{
+			"x": 42
+		}
+	]
+}

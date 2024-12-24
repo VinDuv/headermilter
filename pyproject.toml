@@ -1,0 +1,17 @@
+[tool.mypy]
+mypy_path = "tests/stubs"
+strict = true
+
+[tool.pylint]
+score = false
+
+[tool.coverage.run]
+branch = true
+command_line = "-m unittest"
+include = ["headermilter.py"]
+
+[tool.coverage.report]
+exclude_also = [
+	"raise AssertionError",
+	"if __name__ == '__main__':",
+]
