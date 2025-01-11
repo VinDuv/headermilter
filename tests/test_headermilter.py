@@ -93,7 +93,7 @@ class RulesTests(unittest.TestCase):
     def test_rules(self):
         rule, = ConfParser.parse_file(DATA_PATH / 'conf.json').rules
         self.assertEqual(rule.name, 'test')
-        self.assertEqual(rule.message, "Blah")
+        self.assertEqual(rule.message, "I do not like this mail")
         self.assertEqual(repr(rule.rule),
             "subject MATCHES 'Test' OR (from MATCHES 'test@example.org' AND "
                 "NOT to MATCHES 'test@example.org')")
@@ -108,11 +108,11 @@ class RulesTests(unittest.TestCase):
         m.data[MessageData.Item.SUBJECT][0] = ""
 
         m.data[MessageData.Item.SUBJECT][0] = "test"
-        self.assertEqual(rule.check(m), "Blah")
+        self.assertEqual(rule.check(m), "I do not like this mail")
         m.data[MessageData.Item.SUBJECT][0] = ""
 
         m.data[MessageData.Item.FROM] = ['test@example.org']
-        self.assertEqual(rule.check(m), "Blah")
+        self.assertEqual(rule.check(m), "I do not like this mail")
         m.data[MessageData.Item.FROM] = []
 
     def test_invalid_rule_config(self):

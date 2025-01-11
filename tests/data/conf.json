@@ -2,7 +2,7 @@
 	"socket": "/path/to/some/socket",
 	"rules": {
 		"test": {
-			"message": "Blah",
+			"message": "I do not like this mail",
 			"type": "or",
 			"conds": [
 				{
