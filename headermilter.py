@@ -56,6 +56,8 @@ class MessageData:
         'reply-to': [Item.REPLY_TO, Item.SENDER],
     }
 
+    NAMES = ', '.join(repr(option.value) for option in Item)
+
     # Data items extracted from the message:
     # For address fields (from/to/cc), only the bare adresses are kept
     # dest is the combination of To and CC fields
@@ -302,10 +304,8 @@ class Rule:
             try:
                 self.item = MessageData.Item(data.get_str('item'))
             except ValueError:
-                expected = ', '.join(repr(option.value) for option in
-                    MessageData.Item)
                 data.raise_error('item', f"Unknown match item, expected "
-                    f"{expected}")
+                    f"{MessageData.NAMES}")
 
             self.raw_pattern = data.get_str('value')
             self.pattern = self.raw_pattern.lower()
@@ -319,6 +319,42 @@ class Rule:
 
         def rule_repr(self, *, is_root: bool=False) -> str:
             return f"{self.item.value} MATCHES {self.raw_pattern!r}"
+
+    class MissingHeadersRule(BaseRule, name='missing-header'):
+        """
+        Detects missing or empty headers in a message.
+        """
+
+        headers: list[MessageData.Item]
+
+        def __init__(self, data: 'ConfParser.JSONDict') -> None:
+            self.headers = []
+
+            for raw_ident in data.get_str('headers').replace(',', ' ').split():
+                try:
+                    header = MessageData.Item(raw_ident)
+                except ValueError:
+                    data.raise_error('headers', f"Unknown header identifier "
+                        f"{raw_ident!r} expected one of {MessageData.NAMES}")
+
+                self.headers.append(header)
+
+            if not self.headers:
+                data.raise_error('headers', f"No header identifier specified; "
+                    f"expected a list of of {MessageData.NAMES}")
+
+        def check(self, data: MessageData) -> bool:
+            for header in self.headers:
+                values = data.data[header]
+                values_count = len(values)
+                if values_count == 0 or (values_count == 1 and not values[0]):
+                    return True
+
+            return False
+
+        def rule_repr(self, *, is_root: bool=False) -> str:
+            items_str = ', '.join(repr(header) for header in self.headers)
+            return f"MISSING HEADER IN {items_str}"
 
 
 T = typing.TypeVar('T')

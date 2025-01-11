@@ -29,6 +29,11 @@
 					]
 				}
 			]
+		},
+		"check-headers": {
+			"message": "Some headers are missing!",
+			"type": "missing-header",
+			"headers": "from, to"
 		}
 	}
 }

@@ -91,7 +91,7 @@ class MessageDataTests(unittest.TestCase):
 
 class RulesTests(unittest.TestCase):
     def test_rules(self):
-        rule, = ConfParser.parse_file(DATA_PATH / 'conf.json').rules
+        rule, rule2 = ConfParser.parse_file(DATA_PATH / 'conf.json').rules
         self.assertEqual(rule.name, 'test')
         self.assertEqual(rule.message, "I do not like this mail")
         self.assertEqual(repr(rule.rule),
@@ -115,6 +115,20 @@ class RulesTests(unittest.TestCase):
         self.assertEqual(rule.check(m), "I do not like this mail")
         m.data[MessageData.Item.FROM] = []
 
+        self.assertEqual(repr(rule2.rule),
+            "MISSING HEADER IN from, to")
+
+        self.assertEqual(rule2.check(m), "Some headers are missing!")
+        m.data[MessageData.Item.FROM] = ['test@example.org']
+        self.assertEqual(rule2.check(m), "Some headers are missing!")
+        m.data[MessageData.Item.TO] = ['']
+        self.assertEqual(rule2.check(m), "Some headers are missing!")
+        m.data[MessageData.Item.TO] = ['test@example.org']
+        self.assertEqual(rule2.check(m), "")
+        m.data[MessageData.Item.FROM] = []
+        m.data[MessageData.Item.TO] = []
+
+
     def test_invalid_rule_config(self):
         with self.assertRaisesRegex(SystemExit, r"Invalid character 'é' in "
             "error message"):
@@ -126,6 +140,13 @@ class RulesTests(unittest.TestCase):
 
         with self.assertRaisesRegex(SystemExit, r"Unknown match item"):
             ConfParser.parse_file(DATA_PATH / 'bad_conf_invalid_match.json')
+
+        with self.assertRaisesRegex(SystemExit, r"Unknown header identifier "):
+            ConfParser.parse_file(DATA_PATH / 'bad_conf_unk_header_ident.json')
+
+        with self.assertRaisesRegex(SystemExit, r"No header identifier "
+            "specified"):
+            ConfParser.parse_file(DATA_PATH / 'bad_conf_no_header_ident.json')
 
     def test_conf_parser(self):
         with self.assertRaisesRegex(SystemExit, r"Expecting property name"):

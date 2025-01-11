@@ -10,7 +10,8 @@ filter) that rejects mail whose headers match certain conditions.
   multiple addresses, any address can match. It is also possible to match
   a receiver address (any address in To, Cc) or a sender address (any address in
   From or Reply-To).
-- Combine matches with boolean operators (AND, OR, NOT)
+- Missing or empty headers
+- Combine checks with boolean operators (AND, OR, NOT)
 
 My personal use case is with email addresses that I use exclusively to subscribe
 with mailing list: Any mail that I receive on these addresses which is not also
@@ -90,7 +91,8 @@ configuration objects.
 ### Rules
 
 - `type`: String; the type of the rule, can be either `not`, `and`, `or`,
-  `match`. See below for attributes specific for each rule type.
+  `match`, `missing-header`. See below for attributes specific for each rule
+  type.
 - `message`: String; only for root rules, not rules which are children of other
   rules. Indicates the rejection message to use when the rule matches.
 
@@ -100,19 +102,19 @@ Negates the result of a sub-rule.
 
 - `rule`: Dictionary; the sub-rule to negate
 
-### AND rules
+### AND rule
 
 Combines multiple sub-rules; matches if all the sub-rules match.
 
 - `conds`: List of dictionaries; the sub-rules to combine
 
-### OR rules
+### OR rule
 
 Combines multiple sub-rules; matches if any the sub-rules match.
 
 - `conds`: List of dictionaries; the sub-rules to combine
 
-### MATCH rules
+### MATCH rule
 
 Match a header against a pattern.
 
@@ -121,6 +123,14 @@ Match a header against a pattern.
 - `value`: The pattern to match against. The match is case-insensitive and the
   pattern can contain `*` (0 or more any character), `?` (any character),
   `[seq]` (any character in `seq`), `[!seq]` (any character not in `seq`).
+
+### MISSING HEADER rule
+
+Detects missing or empty headers.
+
+- `headers`: String; comma or space-separated of header items to check, in
+  `subject`, `from`, `reply-to`, `sender`, `to`, `cc`, `dest`. If any of the
+  specified header items is missing/empty, the rule is triggered.
 
 ### Example
 
