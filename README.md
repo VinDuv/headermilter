@@ -17,6 +17,16 @@ My personal use case is with email addresses that I use exclusively to subscribe
 with mailing list: Any mail that I receive on these addresses which is not also
 Cc-ed to the mailing list is probably spam and can be rejected.
 
+**Note on address headers**: Mail addresses in header are validated, and removed
+from consideration if they are not properly formatted. A To header which only
+contains invalid addresses will trigger the “missing/empty header” rule.
+
+There is an exception for “undisclosed recipients” headers that are created by
+some email clients and mailing lists. Specifically, if an address headers starts
+with `undisclosed-recipients:;` or `unlisted-recipients:;` and does not contains
+other valid addresses, the milter will act as if the header contains the address
+`undisclosed`. This address can be matched to detect such emails.
+
 Installation
 ------------
 

@@ -88,6 +88,27 @@ class MessageDataTests(unittest.TestCase):
     def test_item_repr(self):
         self.assertEqual(repr(MessageData.Item.SUBJECT), 'subject')
 
+    def test_non_standard_recipients(self):
+        data = MessageData()
+        data.handle_raw_header('To', 'something very invalid>')
+        self.assertEqual(data.data[MessageData.Item.TO], [])
+
+        # Not sure if you can put a recipient after a undisclosed-recipients;
+        # assume the address is extracted in that case
+        data = MessageData()
+        data.handle_raw_header('To', 'undisclosed-recipients:;, x@z.org')
+        self.assertEqual(data.data[MessageData.Item.TO], ['x@z.org'])
+
+        data = MessageData()
+        data.handle_raw_header('To', 'undisclosed-recipients:;')
+        self.assertEqual(data.data[MessageData.Item.TO], ['undisclosed'])
+
+        data = MessageData()
+        data.handle_raw_header('To',
+            'unlisted-recipients:; (no To-header on input)')
+        self.assertEqual(data.data[MessageData.Item.TO], ['undisclosed'])
+
+
 
 class RulesTests(unittest.TestCase):
     def test_rules(self):

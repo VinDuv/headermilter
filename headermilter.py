@@ -81,6 +81,11 @@ class MessageData:
         if addr_items is not None:
             emails = [email for _, email in getaddresses([value]) if email]
 
+            if not emails and value.startswith(('undisclosed-recipients:;',
+                'unlisted-recipients:;')):
+                emails.append('undisclosed')
+
+
             for addr_item in addr_items:
                 self.data[addr_item].extend(emails)
 
